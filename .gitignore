@@ -43,7 +43,6 @@ htmlcov/
 *.pid
 
 # Tesseract / OCR outputs (if stored)
-*.txt
 *.json
 
 # Secrets
