@@ -61,10 +61,25 @@ pip install -r requirements.txt
 
 Run the service
 ---------------
-Start the FastAPI app with Uvicorn:
+Production (gunicorn with uvicorn ASGI workers):
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8090
+gunicorn main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8090
+```
+
+Development (auto-reload):
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8090 --reload
+```
+
+Systemd (auto-start on boot, auto-restart on crash):
+
+```bash
+sudo cp deploy/systemd/ocr-service.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable ocr-service
+sudo systemctl start ocr-service
 ```
 
 Example requests

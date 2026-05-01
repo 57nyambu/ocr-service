@@ -3,6 +3,9 @@ ocr.py — Image preprocessing and text extraction.
 Handles credential images in English and Kiswahili.
 """
 
+import os
+import shutil
+
 import cv2
 import numpy as np
 import pytesseract
@@ -23,6 +26,22 @@ MIN_DIMENSION = 100
 class OCRError(Exception):
     """Raised when OCR cannot proceed due to image issues."""
     pass
+
+
+# Allow explicit Tesseract path via env var (useful on Windows)
+_tess_cmd = os.getenv("TESSERACT_CMD") or os.getenv("TESSERACT_PATH")
+if _tess_cmd:
+    pytesseract.pytesseract.tesseract_cmd = _tess_cmd
+
+
+def _ensure_tesseract() -> None:
+    """Raise a clear error when the Tesseract binary cannot be found."""
+    if shutil.which(pytesseract.pytesseract.tesseract_cmd):
+        return
+    raise OCRError(
+        "Tesseract OCR is not installed or is not on PATH. "
+        "Install it, then either add it to PATH or set TESSERACT_CMD."
+    )
 
 
 def _preprocess(img_bytes: bytes) -> np.ndarray:
@@ -80,6 +99,7 @@ def extract_text(img_bytes: bytes) -> dict:
         language    — languages attempted
         warning     — set when image quality is marginal
     """
+    _ensure_tesseract()
     processed = _preprocess(img_bytes)
 
     # pytesseract needs a PIL image or a path

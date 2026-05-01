@@ -26,5 +26,5 @@ COPY . .
 
 EXPOSE 8090
 
-# Run the FastAPI app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8090"]
+# Run via gunicorn with uvicorn ASGI workers
+CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "-b", "0.0.0.0:8090", "--timeout", "120", "--access-logfile", "-"]

@@ -1,13 +1,19 @@
 """
 main.py — OCR microservice entry point.
-Run: uvicorn main:app --host 0.0.0.0 --port 8000
+Run:  gunicorn main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8090
+Dev:  uvicorn main:app --host 0.0.0.0 --port 8090 --reload
 """
 
+import logging
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from ocr import extract_text, OCRError
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # App setup
@@ -20,6 +26,13 @@ app = FastAPI(
         "Supports English and Kiswahili."
     ),
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/bmp", "image/webp"}
@@ -71,9 +84,9 @@ async def ocr_endpoint(file: UploadFile = File(...)):
     except OCRError as e:
         # Predictable image-quality errors → 422 (client can fix these)
         raise HTTPException(status_code=422, detail=str(e))
-    except Exception as e:
-        # Unexpected errors → 500
-        raise HTTPException(status_code=500, detail=f"OCR processing failed: {str(e)}")
+    except Exception:
+        logger.exception("OCR processing failed for file: %s", file.filename)
+        raise HTTPException(status_code=500, detail="OCR processing failed. Check server logs.")
 
     return JSONResponse(content={
         "filename": file.filename,

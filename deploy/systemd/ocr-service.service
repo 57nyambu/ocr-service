@@ -8,7 +8,7 @@ User=tom
 Group=tom
 WorkingDirectory=/home/ocr-service
 Environment="PATH=/home/ocr-service/venv/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/home/ocr-service/venv/bin/gunicorn -w 4 -b 0.0.0.0:8090 main:app
+ExecStart=/home/ocr-service/venv/bin/gunicorn main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8090 --timeout 120 --graceful-timeout 30 --access-logfile - --error-logfile -
 Restart=always
 RestartSec=5s
 StandardOutput=journal
