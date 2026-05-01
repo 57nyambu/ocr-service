@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.env.*
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Python cache / testing
+.pytest_cache/
+.mypy_cache/
+
+# Uploaded files / temp data
+uploads/
+tmp/
+*.tmp
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# FastAPI / Uvicorn
+*.pid
+
+# Tesseract / OCR outputs (if stored)
+*.txt
+*.json
+
+# Secrets
+*.key
+*.pem
+*.crt
+.env.local
+
+# Misc
+*.swp
