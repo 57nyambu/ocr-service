@@ -1,0 +1,18 @@
+[Unit]
+Description=OCR Identity Verification Service
+After=network.target
+
+[Service]
+Type=exec
+User=tom
+Group=tom
+WorkingDirectory=/home/ocr-service
+Environment="PATH=/home/ocr-service/venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/ocr-service/venv/bin/gunicorn -w 4 -b 0.0.0.0:8090 main:app
+Restart=always
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
