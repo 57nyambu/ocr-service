@@ -98,6 +98,55 @@ curl -X POST http://localhost:8090/ocr -F "file=@/path/to/document.jpg"
 
 Or use `http` or `jq` to pretty-print responses.
 
+Payload and response samples
+----------------------------
+Request payload (multipart/form-data):
+- Field name: `file`
+- File types: JPEG, PNG, BMP, WebP
+- Max size: 10 MB
+
+Sample request (curl):
+
+```bash
+curl -X POST http://localhost:8090/ocr \
+  -F "file=@/path/to/document.jpg"
+```
+
+Sample success response (HTTP 200):
+
+```json
+{
+  "filename": "document.jpg",
+  "success": true,
+  "text": "REPUBLIC OF KENYA NATIONAL ID",
+  "confidence": 84.2,
+  "language": "eng+swa",
+  "warning": null
+}
+```
+
+Sample no-text response (HTTP 200):
+
+```json
+{
+  "filename": "document.jpg",
+  "success": false,
+  "text": null,
+  "confidence": 12.5,
+  "language": "eng+swa",
+  "warning": null,
+  "error": "No readable text found. Ensure the document is flat, well-lit, and in focus."
+}
+```
+
+Sample image-quality error (HTTP 422):
+
+```json
+{
+  "detail": "Image is too small (80×60 px). Please upload a clearer, higher-resolution photo."
+}
+```
+
 Common issues & troubleshooting
 -------------------------------
 - Error: "tesseract is not installed or it's not in your PATH"
